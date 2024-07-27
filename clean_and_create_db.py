@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sqlite3
 
 
 def clean_messy_csv(file_path):
@@ -55,3 +56,22 @@ df_cleaned = clean_messy_csv('dirty_transaction_data.csv')
 
 # Display the cleaned DataFrame head
 print(df_cleaned.head())
+
+
+def store_data_in_db(df, db_file_path, table_name):
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_file_path)
+    cursor = conn.cursor()
+
+    # Store DataFrame to SQLite table
+    df.to_sql(table_name, conn, if_exists='replace', index=False)
+
+    # Commit changes and close connection
+    conn.commit()
+    conn.close()
+
+    print(f"Cleaned data has been successfully stored in the database '{db_file_path}' in the table '{table_name}'.")
+
+
+# Store the cleaned data
+store_data_in_db(df_cleaned, 'cleaned_data.db', 'cleaned_transaction_data')
